@@ -2607,6 +2607,7 @@ class API:
 
         query_args = {}
         format_ = request.format or F_JSON
+        query_args['request'] = request
 
         # Force response content type and language (en-US only) headers
         headers = request.get_response_headers(SYSTEM_LOCALE,
