@@ -40,7 +40,7 @@
 
 import logging
 from http import HTTPStatus
-from typing import Tuple
+from typing import List, Dict, Tuple
 
 from pygeoapi import l10n
 from pygeoapi.plugin import load_plugin
