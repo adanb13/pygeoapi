@@ -2611,7 +2611,7 @@ class API:
         # Force response content type and language (en-US only) headers
         headers = request.get_response_headers(SYSTEM_LOCALE,
                                                **self.api_headers)
-        query_args['request'] = headers
+        query_args['request'] = request.path_info
 
         LOGGER.debug('Loading provider')
         try:
