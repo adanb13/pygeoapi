@@ -107,6 +107,24 @@ class XarrayEDRProvider(BaseEDRProvider, XarrayProvider):
         z = kwargs.get('z')
         if z is not None:
             if self.z_field is not None:
+                coord = self._data[self.z_field]
+                coord_dtype = getattr(coord, 'dtype', None)
+
+                is_numeric_coord = (
+                    coord_dtype is not None and
+                    coord_dtype.kind in {'i', 'u', 'f'}
+                )
+
+                if is_numeric_coord:
+                    if isinstance(z, str):
+                        try:
+                            z = coord_dtype.type(z)
+                        except ValueError:
+                            LOGGER.debug(
+                                'Unable to cast value %s to %s',
+                                z,
+                                coord_dtype,
+                            )
                 query_params[self.z_field] = z
             else:
                 LOGGER.debug('No vertical level found')
