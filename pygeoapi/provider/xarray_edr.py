@@ -256,11 +256,11 @@ class XarrayEDRProvider(BaseEDRProvider, XarrayProvider):
             if begin == '..':
                 begin = _to_datetime_string(
                     self._data[self.time_field].min().values
-                )
+                ).rstrip('Z')
             if end == '..':
                 end = _to_datetime_string(
                     self._data[self.time_field].max().values
-                )
+                ).rstrip('Z')
             if np.datetime64(begin) < np.datetime64(end):
                 return slice(begin, end)
             else:
