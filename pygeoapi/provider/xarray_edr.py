@@ -38,6 +38,7 @@ from pygeoapi.provider.xarray_ import (
     _convert_float32_to_float64,
     XarrayProvider,
 )
+from pygeoapi.util import get_typed_value
 
 LOGGER = logging.getLogger(__name__)
 
@@ -107,25 +108,7 @@ class XarrayEDRProvider(BaseEDRProvider, XarrayProvider):
         z = kwargs.get('z')
         if z is not None:
             if self.z_field is not None:
-                coord = self._data[self.z_field]
-                coord_dtype = getattr(coord, 'dtype', None)
-
-                coord_is_numeric = (
-                    coord_dtype is not None and
-                    coord_dtype.kind in {'i', 'u', 'f'}
-                )
-
-                if coord_is_numeric:
-                    if isinstance(z, str):
-                        try:
-                            z = coord_dtype.type(z)
-                        except ValueError:
-                            LOGGER.debug(
-                                'Unable to cast value %s to %s',
-                                z,
-                                coord_dtype,
-                            )
-                query_params[self.z_field] = z
+                query_params[self.z_field] = get_typed_value(z)
             else:
                 LOGGER.debug('No vertical level found')
 
@@ -273,12 +256,10 @@ class XarrayEDRProvider(BaseEDRProvider, XarrayProvider):
             begin, end = datetime_.split('/')
             if begin == '..':
                 begin = _to_datetime_string(
-                    self._data[self.time_field].min().values
-                ).rstrip('Z')
+                    self._data[self.time_field].min().values)
             if end == '..':
                 end = _to_datetime_string(
-                    self._data[self.time_field].max().values
-                ).rstrip('Z')
+                    self._data[self.time_field].max().values)
             if np.datetime64(begin) < np.datetime64(end):
                 return slice(begin, end)
             else:
