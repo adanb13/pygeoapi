@@ -310,3 +310,4 @@ class XarrayEDRProvider(BaseEDRProvider, XarrayProvider):
         if self._data[self.y_field][0] > self._data[self.y_field][-1]:
             ymin, ymax = ymax, ymin
         return xmin, ymin, xmax, ymax
+        
