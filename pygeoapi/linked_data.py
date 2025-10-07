@@ -134,7 +134,11 @@ def jsonldify_collection(cls, collection: dict, locale_: str) -> dict:
     spatial_extent = collection.get('extent', {}).get('spatial', {})
     bbox = spatial_extent.get('bbox')
     crs = spatial_extent.get('crs')
-    hascrs84 = crs.endswith('CRS84')
+    if isinstance(crs, (list, tuple, set)):
+        # Normalize each entry to string before testing suffix
+        hascrs84 = any(str(_crs).endswith('CRS84') for _crs in crs if _crs)
+    else:
+        hascrs84 = str(crs).endswith('CRS84') if crs is not None else False
 
     dataset = {
         "@type": "Dataset",
