@@ -242,15 +242,28 @@ def to_json(dict_: dict, pretty: bool = False) -> str:
 
     :returns: JSON string representation
     """
+    try:
+        import orjson
+    except ImportError:
 
+
+        if pretty:
+            indent = 4
+        else:
+            indent = None
+
+        return json.dumps(dict_, default=json_serial, indent=indent,
+                        separators=(',', ':'))
+    option = orjson.OPT_SERIALIZE_NUMPY
     if pretty:
-        indent = 4
-    else:
-        indent = None
+        option |= orjson.OPT_INDENT_2
 
-    return json.dumps(dict_, default=json_serial, indent=indent,
-                      separators=(',', ':'))
-
+    def default(o):
+        v = json_serial(o)
+        if isinstance(v, (bytes, bytearray)):
+            return base64.b64encode(v).decode('ascii')
+        return v
+    return orjson.dumps(dict_, option=option, default=_default).decode('utf-8')
 
 def format_datetime(value: str, format_: str = DATETIME_FORMAT) -> str:
     """
