@@ -258,7 +258,7 @@ def to_json(dict_: dict, pretty: bool = False) -> str:
     if pretty:
         option |= orjson.OPT_INDENT_2
 
-    def default(o):
+    def _default(o):
         v = json_serial(o)
         if isinstance(v, (bytes, bytearray)):
             return base64.b64encode(v).decode('ascii')
