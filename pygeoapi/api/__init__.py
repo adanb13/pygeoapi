@@ -153,7 +153,7 @@ def apply_gzip(headers: dict, content: Union[str, bytes]) -> Union[str, bytes]:
             else:
                 headers['Content-Type'] = \
                     f"{headers['Content-Type']}; charset={charset}"
-                content = compress(content.encode(charset), compresslevel=4)
+                content = compress(content.encode(charset), compresslevel=6)
         except TypeError as err:
             headers.pop('Content-Encoding', None)
             LOGGER.error(f'Error in compression: {err}')
