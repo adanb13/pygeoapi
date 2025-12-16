@@ -110,13 +110,8 @@ def _to_response(headers: dict, status: int,
     if headers['Content-Type'] == 'text/html':
         response = HTMLResponse(content=content, status_code=status)
     else:
-        if isinstance(content, dict):
-            response = JSONResponse(content, status_code=status)
-        else:
-            response = Response(content, status_code=status)
-
-    if headers is not None:
-        response.headers.update(headers)
+        response = Response(content, status_code=status)
+    response.headers.update(headers)
     return response
 
 
@@ -135,6 +130,9 @@ async def execute_from_starlette(api_function, request: Request, *args,
         headers, status, content = await loop.run_in_executor(
             None, call_api_threadsafe, loop, api_function,
             actual_api, api_request, *args)
+        if isinstance(content, (dict, list)):
+            content = orjson.dumps(content, option=orjson.OPT_SERIALIZE_NUMPY)
+            headers['Content-Type'] = 'application/json'
         # 204 responses must have an empty body, but gzip
         # encoding would add gzip metadata, thus we skip
         if status != HTTPStatus.NO_CONTENT:
